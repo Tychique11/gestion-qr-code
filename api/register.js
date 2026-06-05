@@ -11,6 +11,15 @@ export default async function handler(req, res) {
     });
     
     const text = await response.text();
+    
+    // Si c'est du HTML, on retourne le début pour voir l'erreur
+    if (text.trim().startsWith('<')) {
+      return res.status(500).json({ 
+        success: false, 
+        message: "HTML reçu : " + text.substring(0, 300) 
+      });
+    }
+    
     const data = JSON.parse(text);
     return res.status(response.status).json(data);
   } catch (err) {

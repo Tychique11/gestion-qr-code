@@ -12,7 +12,7 @@ export default function Auth({ onLoginSuccess }) {
     setMessage('Chargement...');
 
     const endpoint = isLogin ? 'login.php' : 'register.php';
-    const url = `http://localhost/Projet%20Gestion%20QR%20Code/qr-backend/api/${endpoint}`;
+    const url = `https://tychique-qr-api.infinityfreeapp.com/api/${endpoint}`;
 
     try {
       const response = await fetch(url, {

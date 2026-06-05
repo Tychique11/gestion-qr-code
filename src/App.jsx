@@ -26,7 +26,7 @@ function App() {
     try {
       const userId = localStorage.getItem('id_user');
       
-      const response = await fetch('https://tychique-qr-api.infinityfreeapp.com/api/generate.php', {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

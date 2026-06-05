@@ -6,17 +6,48 @@ import './App.css';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('id_user'));
   const [url, setUrl] = useState('https://www.google.com');
+  const [qrValue, setQrValue] = useState('https://www.google.com');
   const [fgColor, setFgColor] = useState('#0a0a0a');
   const [bgColor, setBgColor] = useState('#ffffff');
   const [taille, setTaille] = useState(250);
   const [typeContenu, setTypeContenu] = useState('url');
   const [limiteScans, setLimiteScans] = useState(100);
+  const [isSaving, setIsSaving] = useState(false);
 
   const qrRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem('id_user');
     setIsLoggedIn(false);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const userId = localStorage.getItem('id_user');
+      
+      const response = await fetch('https://tychique-qr-api.infinityfreeapp.com/api/generate.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_user: userId,
+          lien_destination: url,
+          limite_scans: limiteScans
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setQrValue(data.url_suivi);
+        alert("QR Code enregistré avec succès et suivi activé !");
+      } else {
+        alert(data.message || "Erreur d'enregistrement.");
+      }
+    } catch (error) {
+      alert("Erreur de connexion au serveur.");
+    }
+    setIsSaving(false);
   };
 
   const handleDownload = () => {
@@ -53,13 +84,13 @@ function App() {
         await navigator.share({
           title: 'Mon QR Code',
           text: 'Scannez ce QR Code pour accéder au lien !',
-          url: url,
+          url: qrValue,
         });
       } catch (err) {
         console.error(err);
       }
     } else {
-      navigator.clipboard.writeText(url);
+      navigator.clipboard.writeText(qrValue);
       alert("Lien du QR Code copié dans le presse-papier !");
     }
   };
@@ -87,7 +118,10 @@ function App() {
             <input 
               type="text" 
               value={url} 
-              onChange={(e) => setUrl(e.target.value)} 
+              onChange={(e) => {
+                setUrl(e.target.value);
+                setQrValue(e.target.value);
+              }} 
               placeholder="https://exemple.com"
             />
           </div>
@@ -142,6 +176,10 @@ function App() {
               />
             </div>
           </div>
+
+          <button className="primary-btn" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? "Enregistrement en cours..." : "Enregistrer ce QR Code"}
+          </button>
         </section>
 
         <section className="preview-section">
@@ -149,7 +187,7 @@ function App() {
           
           <div className="qr-box" style={{ backgroundColor: bgColor }} ref={qrRef}>
             <QRCodeSVG 
-              value={url} 
+              value={qrValue} 
               size={taille} 
               bgColor={bgColor} 
               fgColor={fgColor} 

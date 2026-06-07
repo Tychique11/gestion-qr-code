@@ -63,7 +63,6 @@ export default function Auth({ onLoginSuccess }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Ex: nom@domaine.com"
-              autoComplete="off"
             />
           </div>
 
@@ -74,7 +73,6 @@ export default function Auth({ onLoginSuccess }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="off"
             />
           </div>
 

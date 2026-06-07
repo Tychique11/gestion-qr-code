@@ -23,13 +23,28 @@ export default async function handler(req, res) {
     return res.status(403).send("Ce QR Code a atteint sa limite de scans.");
   }
 
-  const adresse_ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const adresse_ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
   const user_agent = req.headers['user-agent'] || 'Inconnu';
+
+  // Géolocalisation
+  let ville = '', region = '', pays = '';
+  try {
+    const geo = await fetch(`http://ip-api.com/json/${adresse_ip}?fields=status,country,regionName,city&lang=fr`);
+    const geoData = await geo.json();
+    if (geoData.status !== 'fail') {
+      ville = geoData.city || '';
+      region = geoData.regionName || '';
+      pays = geoData.country || '';
+    }
+  } catch (e) {}
 
   await supabase.from('scan_history').insert([{
     id_qrcode: qr.id_qrcode,
     adresse_ip,
-    user_agent
+    user_agent,
+    ville,
+    zone_geographique: region,
+    pays
   }]);
 
   await supabase

@@ -95,6 +95,9 @@ export default function MesQRCodes({ onRetour }) {
                         <th>#</th>
                         <th>Adresse IP</th>
                         <th>Appareil</th>
+                        <th>Ville</th>
+                        <th>Région</th>
+                        <th>Pays</th>
                         <th>Date du scan</th>
                       </tr>
                     </thead>
@@ -104,6 +107,9 @@ export default function MesQRCodes({ onRetour }) {
                           <td>{i + 1}</td>
                           <td>{scan.adresse_ip || 'Inconnue'}</td>
                           <td>{parseUA(scan.user_agent)}</td>
+                          <td>{scan.ville || '-'}</td>
+                          <td>{scan.zone_geographique || '-'}</td>
+                          <td>{scan.pays || '-'}</td>
                           <td>{formatDate(scan.date_scan)}</td>
                         </tr>
                       ))}

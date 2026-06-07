@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import Auth from './components/Auth';
+import MesQRCodes from './components/MesQRCodes';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
   const [typeContenu, setTypeContenu] = useState('url');
   const [limiteScans, setLimiteScans] = useState(100);
   const [isSaving, setIsSaving] = useState(false);
+  const [voirQRCodes, setVoirQRCodes] = useState(false);
 
   const qrRef = useRef(null);
 
@@ -95,17 +97,26 @@ function App() {
     }
   };
 
-  if (!isLoggedIn) {
+ if (!isLoggedIn) {
     return <Auth onLoginSuccess={() => setIsLoggedIn(true)} />;
+  }
+
+  if (voirQRCodes) {
+    return <MesQRCodes onRetour={() => setVoirQRCodes(false)} />;
   }
 
   return (
     <div className="app-container">
       <header className="app-header">
         <h1>Générateur de QR Code Pro</h1>
-        <button onClick={handleLogout} className="logout-btn">
-          Déconnexion
-        </button>
+       <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => setVoirQRCodes(true)} className="logout-btn" style={{ background: 'rgba(0,122,255,0.1)', borderColor: 'rgba(0,122,255,0.2)', color: '#007aff' }}>
+            Mes QR Codes
+          </button>
+          <button onClick={handleLogout} className="logout-btn">
+            Déconnexion
+          </button>
+        </div>
       </header>
 
       <main className="main-content liquid-glass">

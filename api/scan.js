@@ -2,7 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
+  process.env.SUPABASE_SECRET_KEY,
+  { auth: { persistSession: false } }
 );
 
 export default async function handler(req, res) {
@@ -23,10 +24,12 @@ export default async function handler(req, res) {
   }
 
   const adresse_ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const user_agent = req.headers['user-agent'] || 'Inconnu';
 
   await supabase.from('scan_history').insert([{
     id_qrcode: qr.id_qrcode,
-    adresse_ip
+    adresse_ip,
+    user_agent
   }]);
 
   await supabase
